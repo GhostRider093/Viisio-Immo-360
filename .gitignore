@@ -1,0 +1,3 @@
+node_modules/
+database/real_estate.db
+.env
