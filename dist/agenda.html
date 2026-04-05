@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <span class="logo-text">IMMO</span>
+                    <span class="logo-forge">ADMIN</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="clients.html">Clients</a></li>
+                    <li><a href="properties.html">Biens</a></li>
+                    <li><a href="agenda.html">Agenda</a></li>
+                    <li><a href="contracts.html">Contrats</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Agenda</h1>
+                    <p class="hero-subtitle">Gérez vos rendez-vous et événements</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="agenda" class="container">
+            <h2>Mon Agenda</h2>
+            <div id="calendar"></div>
+        </section>
+
+        <section id="create-event" class="container">
+            <h2>Ajouter un événement</h2>
+            <form id="event-form" class="form">
+                <div class="form-group">
+                    <label for="event-title">Titre :</label>
+                    <input type="text" id="event-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-start">Date de début :</label>
+                    <input type="datetime-local" id="event-start" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-end">Date de fin :</label>
+                    <input type="datetime-local" id="event-end" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-description">Description :</label>
+                    <textarea id="event-description" required></textarea>
+                </div>
+                <button type="submit" class="submit-button">Ajouter</button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-text">IMMO</span>
+                    <span class="logo-forge">ADMIN</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Mentions légales</a>
+                    <a href="#">Politique de confidentialité</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>© 2023 Application Immobilière Administratif. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="scripts/agenda.js"></script>
+</body>
+</html>

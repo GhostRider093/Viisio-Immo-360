@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Biens</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <span class="logo-text">IMMO</span>
+                    <span class="logo-forge">ADMIN</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="clients.html">Clients</a></li>
+                    <li><a href="properties.html">Biens</a></li>
+                    <li><a href="agenda.html">Agenda</a></li>
+                    <li><a href="contracts.html">Contrats</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Gestion des Biens</h1>
+                    <p class="hero-subtitle">Ajoutez et gérez vos biens immobiliers</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="property-list" class="container">
+            <h2>Liste des biens</h2>
+            <div id="properties"></div>
+        </section>
+
+        <section id="create-property" class="container">
+            <h2>Ajouter un bien</h2>
+            <form id="property-form" class="form">
+                <div class="form-group">
+                    <label for="property-address">Adresse :</label>
+                    <input type="text" id="property-address" required>
+                </div>
+                <div class="form-group">
+                    <label for="property-type">Type :</label>
+                    <select id="property-type" required>
+                        <option value="appartement">Appartement</option>
+                        <option value="maison">Maison</option>
+                        <option value="terrain">Terrain</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="property-price">Prix :</label>
+                    <input type="number" id="property-price" required>
+                </div>
+                <div class="form-group">
+                    <label for="property-area">Surface (m²) :</label>
+                    <input type="number" id="property-area" required>
+                </div>
+                <div class="form-group">
+                    <label for="property-rooms">Nombre de pièces :</label>
+                    <input type="number" id="property-rooms" required>
+                </div>
+                <div class="form-group">
+                    <label for="property-description">Description :</label>
+                    <textarea id="property-description" required></textarea>
+                </div>
+                <button type="submit" class="submit-button">Ajouter</button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-text">IMMO</span>
+                    <span class="logo-forge">ADMIN</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Mentions légales</a>
+                    <a href="#">Politique de confidentialité</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>© 2023 Application Immobilière Administratif. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="scripts/properties.js"></script>
+</body>
+</html>

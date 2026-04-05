@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Contrats</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <span class="logo-text">IMMO</span>
+                    <span class="logo-forge">ADMIN</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="clients.html">Clients</a></li>
+                    <li><a href="properties.html">Biens</a></li>
+                    <li><a href="agenda.html">Agenda</a></li>
+                    <li><a href="contracts.html">Contrats</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Gestion des Contrats</h1>
+                    <p class="hero-subtitle">Ajoutez et gérez vos contrats</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contract-list" class="container">
+            <h2>Liste des contrats</h2>
+            <div id="contracts"></div>
+        </section>
+
+        <section id="create-contract" class="container">
+            <h2>Ajouter un contrat</h2>
+            <form id="contract-form" class="form">
+                <div class="form-group">
+                    <label for="contract-property">Bien :</label>
+                    <select id="contract-property" required>
+                        <option value="">Sélectionnez un bien</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contract-client">Client :</label>
+                    <select id="contract-client" required>
+                        <option value="">Sélectionnez un client</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contract-start">Date de début :</label>
+                    <input type="date" id="contract-start" required>
+                </div>
+                <div class="form-group">
+                    <label for="contract-end">Date de fin :</label>
+                    <input type="date" id="contract-end" required>
+                </div>
+                <button type="submit" class="submit-button">Ajouter</button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-text">IMMO</span>
+                    <span class="logo-forge">ADMIN</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Mentions légales</a>
+                    <a href="#">Politique de confidentialité</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>© 2023 Application Immobilière Administratif. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="scripts/contracts.js"></script>
+</body>
+</html>

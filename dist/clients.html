@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Clients</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <span class="logo-text">IMMO</span>
+                    <span class="logo-forge">ADMIN</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="clients.html">Clients</a></li>
+                    <li><a href="properties.html">Biens</a></li>
+                    <li><a href="agenda.html">Agenda</a></li>
+                    <li><a href="contracts.html">Contrats</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Gestion des Clients</h1>
+                    <p class="hero-subtitle">Ajoutez et gérez vos clients</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="client-list" class="container">
+            <h2>Liste des clients</h2>
+            <div id="clients"></div>
+        </section>
+
+        <section id="create-client" class="container">
+            <h2>Ajouter un client</h2>
+            <form id="client-form" class="form">
+                <div class="form-group">
+                    <label for="client-name">Nom :</label>
+                    <input type="text" id="client-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-firstname">Prénom :</label>
+                    <input type="text" id="client-firstname" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-email">Email :</label>
+                    <input type="email" id="client-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-phone">Téléphone :</label>
+                    <input type="tel" id="client-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-address">Adresse :</label>
+                    <input type="text" id="client-address" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-city">Ville :</label>
+                    <input type="text" id="client-city" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-postal-code">Code postal :</label>
+                    <input type="text" id="client-postal-code" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-country">Pays :</label>
+                    <input type="text" id="client-country" required>
+                </div>
+                <button type="submit" class="submit-button">Ajouter</button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-text">IMMO</span>
+                    <span class="logo-forge">ADMIN</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Mentions légales</a>
+                    <a href="#">Politique de confidentialité</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>© 2023 Application Immobilière Administratif. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="scripts/clients.js"></script>
+</body>
+</html>

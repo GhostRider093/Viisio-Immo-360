@@ -1,0 +1,30 @@
+{
+  "name": "application-immobiliere-administratif",
+  "version": "1.0.0",
+  "description": "Une application web pour gérer les aspects administratifs d'une agence immobilière",
+  "type": "module",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "npm run build && node server/app.js",
+    "dev": "nodemon server/app.js",
+    "client": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "init-db": "node database/init_database.js",
+    "capture:leboncoin": "node scripts/capture-leboncoin.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "playwright": "^1.59.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "nodemon": "^3.0.2",
+    "vite": "^5.0.8"
+  }
+}
