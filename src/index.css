@@ -141,7 +141,7 @@ button {
 }
 
 .mobile-menu-trigger {
-  min-width: 82px;
+  min-width: min(320px, 100%);
   min-height: 48px;
   border: 1px solid rgba(29, 38, 47, 0.88);
   background: rgba(247, 249, 252, 0.92);
@@ -151,6 +151,7 @@ button {
   letter-spacing: 1.4px;
   text-transform: uppercase;
   cursor: pointer;
+  justify-content: center;
 }
 
 .mobile-menu-trigger.is-open {

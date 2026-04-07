@@ -19,13 +19,12 @@ const Header = ({ currentPage, setCurrentPage, isMobile }) => {
       <>
         <header className="header mobile-header">
           <div className="container mobile-header-inner">
-            <span className="brand-badge brand-badge-wide mobile-brand-badge">Application Immobiliere</span>
             <button
               type="button"
-              className={`mobile-menu-trigger ${isMobileMenuOpen ? 'is-open' : ''}`}
+              className={`brand-badge brand-badge-wide mobile-brand-badge mobile-menu-trigger ${isMobileMenuOpen ? 'is-open' : ''}`}
               onClick={() => setIsMobileMenuOpen((currentValue) => !currentValue)}
             >
-              Menu
+              Application Immobiliere - Menu
             </button>
           </div>
         </header>
