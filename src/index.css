@@ -967,7 +967,8 @@ h2 {
 .mobile-popup-nav {
   position: fixed;
   top: 84px;
-  right: 12px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 50;
   display: grid;
   gap: 8px;
