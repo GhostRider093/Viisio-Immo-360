@@ -64,6 +64,10 @@ function App() {
   const [pageTarget, setPageTarget] = useState({})
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 820)
   const currentMeta = pageContent[currentPage]
+  const mobileHeroTitle = isMobile && currentPage === 'dashboard' ? 'Visio Immo 360' : currentMeta.title
+  const mobileHeroDescription = isMobile && currentPage === 'dashboard'
+    ? 'Systeme'
+    : currentMeta.description
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 820px)')
@@ -109,8 +113,8 @@ function App() {
         <section className={`hero-panel ${isMobile ? 'is-mobile' : ''}`}>
           <div className="hero-copy">
             {!isMobile && <p className="hero-eyebrow">{currentMeta.eyebrow}</p>}
-            <h1 className="hero-title">{currentMeta.title}</h1>
-            <p className="hero-description">{currentMeta.description}</p>
+            <h1 className="hero-title">{mobileHeroTitle}</h1>
+            <p className="hero-description">{mobileHeroDescription}</p>
           </div>
         </section>
 

@@ -109,7 +109,7 @@ const buildPreviewItems = (collections, recentClients) => ({
   }))
 })
 
-function Dashboard({ setCurrentPage }) {
+function Dashboard({ setCurrentPage, isMobile = false }) {
   const [collections, setCollections] = useState(emptyCollections)
   const [recentClients, setRecentClients] = useState([])
   const [watchPayload, setWatchPayload] = useState(emptyWatchPayload)
@@ -156,6 +156,7 @@ function Dashboard({ setCurrentPage }) {
     loadDashboard()
   }, [])
 
+  const todayEvents = collections.events.filter((event) => isToday(event.start_date))
   const previewItems = buildPreviewItems(collections, recentClients)
   const summaryByModule = {
     clients: `${collections.clients.length} fiches`,
@@ -172,6 +173,105 @@ function Dashboard({ setCurrentPage }) {
   const openClientProfile = (clientId) => {
     setSelectedModule(null)
     setCurrentPage('clients', { clientId })
+  }
+
+  if (isMobile) {
+    return (
+      <div className="dashboard-grid mobile-dashboard-grid">
+        <section className="card dashboard-intro mobile-dashboard-intro">
+          <h3>Acces direct</h3>
+        </section>
+
+        <section className="mobile-dashboard-stack">
+          <button
+            type="button"
+            className="mobile-dashboard-tile"
+            onClick={() => openModule('clients')}
+          >
+            <span className="mobile-dashboard-label">Clients</span>
+            <strong className="mobile-dashboard-value">{summaryByModule.clients}</strong>
+            <div className="mobile-dashboard-preview">
+              {previewItems.clients.slice(0, 2).map((item) => (
+                <span key={`mobile-client-${item.id}`} className="mobile-dashboard-chip">{item.title}</span>
+              ))}
+              {previewItems.clients.length === 0 && (
+                <span className="mobile-dashboard-detail">Ouvrir les fiches clients</span>
+              )}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className="mobile-dashboard-tile"
+            onClick={() => openModule('properties')}
+          >
+            <span className="mobile-dashboard-label">Biens</span>
+            <strong className="mobile-dashboard-value">{summaryByModule.properties}</strong>
+            <div className="mobile-dashboard-preview">
+              {previewItems.properties.slice(0, 2).map((item) => (
+                <span key={`mobile-property-${item.id}`} className="mobile-dashboard-chip">{item.title}</span>
+              ))}
+              {previewItems.properties.length === 0 && (
+                <span className="mobile-dashboard-detail">Ouvrir les biens</span>
+              )}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className={`mobile-dashboard-tile is-agenda ${todayEvents.length > 0 ? 'has-alert' : ''}`}
+            onClick={() => openModule('agenda')}
+          >
+            <span className="mobile-dashboard-label">Agenda</span>
+            <strong className="mobile-dashboard-value">
+              {todayEvents.length > 0 ? `${todayEvents.length} aujourd hui` : summaryByModule.agenda}
+            </strong>
+            <div className="mobile-dashboard-preview">
+              {previewItems.agenda.slice(0, 2).map((item) => (
+                <span key={`mobile-agenda-${item.id}`} className="mobile-dashboard-chip">{item.title}</span>
+              ))}
+              {previewItems.agenda.length === 0 && (
+                <span className="mobile-dashboard-detail">Ouvrir le planning du jour</span>
+              )}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className="mobile-dashboard-tile"
+            onClick={() => openModule('contracts')}
+          >
+            <span className="mobile-dashboard-label">Contrats</span>
+            <strong className="mobile-dashboard-value">{summaryByModule.contracts}</strong>
+            <div className="mobile-dashboard-preview">
+              {previewItems.contracts.slice(0, 2).map((item) => (
+                <span key={`mobile-contract-${item.id}`} className="mobile-dashboard-chip">{item.title}</span>
+              ))}
+              {previewItems.contracts.length === 0 && (
+                <span className="mobile-dashboard-detail">Ouvrir les contrats</span>
+              )}
+            </div>
+          </button>
+
+          <a
+            className="mobile-dashboard-tile is-link"
+            href={watchPayload.latest?.sourceUrl || 'https://www.leboncoin.fr/'}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span className="mobile-dashboard-label">Recherche</span>
+            <strong className="mobile-dashboard-value">Leboncoin</strong>
+            <span className="mobile-dashboard-detail">Ouvrir la recherche</span>
+          </a>
+        </section>
+
+        {errorMessage && (
+          <div className="card" style={{ borderLeft: '4px solid #9d3d32', color: '#9d3d32' }}>
+            {errorMessage}
+          </div>
+        )}
+      </div>
+    )
   }
 
   return (
