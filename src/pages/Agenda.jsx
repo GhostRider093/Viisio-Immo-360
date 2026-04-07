@@ -34,7 +34,7 @@ const isTodayEvent = (value) => {
   )
 }
 
-function Agenda({ navigateTo }) {
+function Agenda({ navigateTo, isMobile = false }) {
   const [events, setEvents] = useState([])
   const [clients, setClients] = useState([])
   const [properties, setProperties] = useState([])
@@ -118,7 +118,7 @@ function Agenda({ navigateTo }) {
         <div className="card">
           <h3>Ajouter un evenement</h3>
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
               <div className="form-group">
                 <label>Titre</label>
                 <input
@@ -192,6 +192,37 @@ function Agenda({ navigateTo }) {
         <h3>Liste des Evenements</h3>
         {events.length === 0 ? (
           <p>Aucun evenement enregistre</p>
+        ) : isMobile ? (
+          <div className="mobile-record-list">
+            {events.map((event) => (
+              <article key={event.id} className="mobile-record-card">
+                <div className="mobile-record-head">
+                  <strong className="mobile-record-title">{event.title}</strong>
+                  <span className="mobile-record-meta">{formatDateTime(event.start_date)}</span>
+                </div>
+                <p>{formatDateTime(event.end_date)}</p>
+                {event.client_id && (
+                  <button
+                    type="button"
+                    className="inline-link-btn"
+                    onClick={() => navigateTo('clients', { clientId: event.client_id })}
+                  >
+                    {event.client_firstname} {event.client_name}
+                  </button>
+                )}
+                {event.property_id && (
+                  <button
+                    type="button"
+                    className="inline-link-btn"
+                    onClick={() => navigateTo('properties', { propertyId: event.property_id })}
+                  >
+                    {event.property_address}
+                  </button>
+                )}
+                <p>{event.description || '-'}</p>
+              </article>
+            ))}
+          </div>
         ) : (
           <table className="table">
             <thead>

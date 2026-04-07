@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from './components/Header'
 import Dashboard from './pages/Dashboard'
 import Clients from './pages/Clients'
@@ -62,7 +62,18 @@ const pageContent = {
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [pageTarget, setPageTarget] = useState({})
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 820)
   const currentMeta = pageContent[currentPage]
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 820px)')
+    const updateViewport = (event) => setIsMobile(event.matches)
+
+    setIsMobile(mediaQuery.matches)
+    mediaQuery.addEventListener('change', updateViewport)
+
+    return () => mediaQuery.removeEventListener('change', updateViewport)
+  }, [])
 
   const navigateTo = (page, target = {}) => {
     setCurrentPage(page)
@@ -76,48 +87,30 @@ function App() {
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <Dashboard setCurrentPage={navigateTo} />
+        return <Dashboard setCurrentPage={navigateTo} isMobile={isMobile} />
       case 'clients':
-        return <Clients focusClientId={pageTarget.clientId} onFocusHandled={clearTarget} />
+        return <Clients focusClientId={pageTarget.clientId} onFocusHandled={clearTarget} isMobile={isMobile} />
       case 'properties':
-        return <Properties focusPropertyId={pageTarget.propertyId} onFocusHandled={clearTarget} />
+        return <Properties focusPropertyId={pageTarget.propertyId} onFocusHandled={clearTarget} isMobile={isMobile} />
       case 'agenda':
-        return <Agenda navigateTo={navigateTo} />
+        return <Agenda navigateTo={navigateTo} isMobile={isMobile} />
       case 'contracts':
-        return <Contracts />
+        return <Contracts navigateTo={navigateTo} isMobile={isMobile} />
       default:
-        return <Clients focusClientId={pageTarget.clientId} onFocusHandled={clearTarget} />
+        return <Clients focusClientId={pageTarget.clientId} onFocusHandled={clearTarget} isMobile={isMobile} />
     }
   }
 
   return (
-    <div className="app-shell">
-      <Header currentPage={currentPage} setCurrentPage={navigateTo} />
+    <div className={`app-shell ${isMobile ? 'is-mobile' : 'is-desktop'}`}>
+      <Header currentPage={currentPage} setCurrentPage={navigateTo} isMobile={isMobile} />
 
       <main className="app-main">
-        <section className="hero-panel">
+        <section className={`hero-panel ${isMobile ? 'is-mobile' : ''}`}>
           <div className="hero-copy">
-            <p className="hero-eyebrow">{currentMeta.eyebrow}</p>
+            {!isMobile && <p className="hero-eyebrow">{currentMeta.eyebrow}</p>}
             <h1 className="hero-title">{currentMeta.title}</h1>
             <p className="hero-description">{currentMeta.description}</p>
-          </div>
-
-          <div className="hero-aside">
-            <div className="hero-aside-card">
-              <p className="hero-aside-kicker">Suite Administrative</p>
-              <p className="hero-aside-text">
-                Une interface inspiree d&apos;une direction artistique editoriale: papier ivoire, accents or, contrastes nets et hierarchie plus mature.
-              </p>
-            </div>
-
-            <div className="hero-stats">
-              {currentMeta.stats.map((stat) => (
-                <div key={stat.label} className="hero-stat">
-                  <span className="hero-stat-value">{stat.value}</span>
-                  <span className="hero-stat-label">{stat.label}</span>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
 

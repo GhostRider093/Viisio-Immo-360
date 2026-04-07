@@ -13,6 +13,25 @@ const initialFormData = {
   country: ''
 }
 
+const prospectDefaults = {
+  address: 'A completer',
+  city: 'A completer',
+  postal_code: '00000',
+  country: 'France'
+}
+
+const normalizePhoneHref = (value) => `tel:${value.replace(/[^+\d]/g, '')}`
+const normalizeEmail = (value) => value.trim()
+
+const formatDateTime = (value) => {
+  if (!value) {
+    return '-'
+  }
+
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('fr-FR')
+}
+
 const saveRecentClient = (client) => {
   try {
     const currentHistory = JSON.parse(window.localStorage.getItem(RECENT_CLIENTS_KEY) || '[]')
@@ -32,15 +51,18 @@ const saveRecentClient = (client) => {
   }
 }
 
-const Clients = ({ focusClientId, onFocusHandled }) => {
+const Clients = ({ focusClientId, onFocusHandled, isMobile = false }) => {
   const [clients, setClients] = useState([])
+  const [events, setEvents] = useState([])
+  const [contracts, setContracts] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [feedbackMessage, setFeedbackMessage] = useState('')
   const [selectedClient, setSelectedClient] = useState(null)
   const [formData, setFormData] = useState(initialFormData)
 
   useEffect(() => {
-    fetchClients()
+    fetchClientResources()
   }, [])
 
   useEffect(() => {
@@ -58,12 +80,24 @@ const Clients = ({ focusClientId, onFocusHandled }) => {
     onFocusHandled?.()
   }, [focusClientId, clients, onFocusHandled])
 
-  const fetchClients = async () => {
+  const fetchClientResources = async () => {
     try {
       setErrorMessage('')
-      const response = await fetch('/api/clients')
-      const data = await response.json()
-      setClients(data)
+      const [clientsResponse, eventsResponse, contractsResponse] = await Promise.all([
+        fetch('/api/clients'),
+        fetch('/api/events'),
+        fetch('/api/contracts')
+      ])
+
+      const [clientsData, eventsData, contractsData] = await Promise.all([
+        clientsResponse.json(),
+        eventsResponse.json(),
+        contractsResponse.json()
+      ])
+
+      setClients(clientsData)
+      setEvents(eventsData)
+      setContracts(contractsData)
     } catch (error) {
       console.error('Erreur lors du chargement des clients:', error)
       setErrorMessage('Impossible de charger les clients')
@@ -80,7 +114,10 @@ const Clients = ({ focusClientId, onFocusHandled }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...prospectDefaults,
+          ...formData
+        }),
       })
 
       const data = await response.json()
@@ -92,7 +129,7 @@ const Clients = ({ focusClientId, onFocusHandled }) => {
 
       setShowForm(false)
       setFormData(initialFormData)
-      fetchClients()
+      fetchClientResources()
     } catch (error) {
       console.error("Erreur lors de l'ajout du client:", error)
       setErrorMessage('Erreur lors de la communication avec le serveur')
@@ -114,7 +151,7 @@ const Clients = ({ focusClientId, onFocusHandled }) => {
         return
       }
 
-      fetchClients()
+      fetchClientResources()
     } catch (error) {
       console.error('Erreur lors de la suppression:', error)
       setErrorMessage('Erreur lors de la communication avec le serveur')
@@ -124,7 +161,26 @@ const Clients = ({ focusClientId, onFocusHandled }) => {
   const handleViewClient = (client) => {
     setSelectedClient(client)
     saveRecentClient(client)
+    setFeedbackMessage('')
   }
+
+  const handleCopyEmail = async (email) => {
+    try {
+      await navigator.clipboard.writeText(email)
+      setFeedbackMessage('Email copie dans le presse-papiers')
+    } catch (error) {
+      console.error("Erreur lors de la copie de l'email:", error)
+      setFeedbackMessage('Copie impossible sur cet appareil')
+    }
+  }
+
+  const selectedClientEvents = selectedClient
+    ? events.filter((event) => Number(event.client_id) === selectedClient.id)
+    : []
+
+  const selectedClientContracts = selectedClient
+    ? contracts.filter((contract) => Number(contract.client_id) === selectedClient.id)
+    : []
 
   return (
     <div>
@@ -145,7 +201,7 @@ const Clients = ({ focusClientId, onFocusHandled }) => {
         <div className="card">
           <h3>Ajouter un client</h3>
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
               <div className="form-group">
                 <label>Nom</label>
                 <input
@@ -228,6 +284,23 @@ const Clients = ({ focusClientId, onFocusHandled }) => {
         <h3>Liste des Clients</h3>
         {clients.length === 0 ? (
           <p>Aucun client enregistre</p>
+        ) : isMobile ? (
+          <div className="mobile-record-list">
+            {clients.map((client) => (
+              <article key={client.id} className="mobile-record-card">
+                <div className="mobile-record-head">
+                  <strong className="mobile-record-title">{client.firstname} {client.name}</strong>
+                  <span className="mobile-record-meta">{client.city}</span>
+                </div>
+                <a className="contact-link" href={`mailto:${normalizeEmail(client.email)}`}>{client.email}</a>
+                <a className="contact-link" href={normalizePhoneHref(client.phone)}>{client.phone}</a>
+                <div className="mobile-record-actions">
+                  <button className="btn btn-secondary" onClick={() => handleViewClient(client)}>Consulter</button>
+                  <button className="btn btn-danger" onClick={() => handleDelete(client.id)}>Supprimer</button>
+                </div>
+              </article>
+            ))}
+          </div>
         ) : (
           <table className="table">
             <thead>
@@ -245,8 +318,16 @@ const Clients = ({ focusClientId, onFocusHandled }) => {
                 <tr key={client.id}>
                   <td>{client.name}</td>
                   <td>{client.firstname}</td>
-                  <td>{client.email}</td>
-                  <td>{client.phone}</td>
+                  <td>
+                    <a className="contact-link" href={`mailto:${normalizeEmail(client.email)}`}>
+                      {client.email}
+                    </a>
+                  </td>
+                  <td>
+                    <a className="contact-link" href={normalizePhoneHref(client.phone)}>
+                      {client.phone}
+                    </a>
+                  </td>
                   <td>{client.city}</td>
                   <td className="table-actions">
                     <button
@@ -285,11 +366,24 @@ const Clients = ({ focusClientId, onFocusHandled }) => {
             <div className="client-detail-grid">
               <div className="client-detail-item">
                 <span className="client-detail-label">Email</span>
-                <strong>{selectedClient.email}</strong>
+                <div className="client-detail-stack">
+                  <a className="contact-link contact-link-strong" href={`mailto:${normalizeEmail(selectedClient.email)}`}>
+                    {selectedClient.email}
+                  </a>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handleCopyEmail(selectedClient.email)}
+                  >
+                    Copier le mail
+                  </button>
+                </div>
               </div>
               <div className="client-detail-item">
                 <span className="client-detail-label">Telephone</span>
-                <strong>{selectedClient.phone}</strong>
+                <a className="contact-link contact-link-strong" href={normalizePhoneHref(selectedClient.phone)}>
+                  {selectedClient.phone}
+                </a>
               </div>
               <div className="client-detail-item">
                 <span className="client-detail-label">Adresse</span>
@@ -308,6 +402,40 @@ const Clients = ({ focusClientId, onFocusHandled }) => {
                 <strong>{selectedClient.country}</strong>
               </div>
             </div>
+
+            <div className="client-related-panel">
+              <div className="client-related-card">
+                <span className="client-detail-label">Agenda lie</span>
+                {selectedClientEvents.length > 0 ? (
+                  selectedClientEvents.map((event) => (
+                    <div key={`event-${event.id}`} className="client-related-row">
+                      <strong>{event.title}</strong>
+                      <span>{formatDateTime(event.start_date)}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p>Aucun evenement lie pour le moment.</p>
+                )}
+              </div>
+
+              <div className="client-related-card">
+                <span className="client-detail-label">Contrats lies</span>
+                {selectedClientContracts.length > 0 ? (
+                  selectedClientContracts.map((contract) => (
+                    <div key={`contract-${contract.id}`} className="client-related-row">
+                      <strong>Contrat #{contract.id}</strong>
+                      <span>{contract.type} · {contract.status}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p>Aucun contrat lie pour le moment.</p>
+                )}
+              </div>
+            </div>
+
+            {feedbackMessage && (
+              <div className="client-feedback-box">{feedbackMessage}</div>
+            )}
 
             <div className="modal-actions">
               <button type="button" className="btn" onClick={() => setSelectedClient(null)}>

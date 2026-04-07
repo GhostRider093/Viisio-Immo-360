@@ -10,22 +10,38 @@ const initialFormData = {
   status: 'actif'
 }
 
-const Contracts = () => {
+const toEntityId = (value) => Number.parseInt(value, 10)
+
+const Contracts = ({ navigateTo, isMobile = false }) => {
   const [contracts, setContracts] = useState([])
+  const [clients, setClients] = useState([])
+  const [properties, setProperties] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [formData, setFormData] = useState(initialFormData)
 
   useEffect(() => {
-    fetchContracts()
+    fetchContractResources()
   }, [])
 
-  const fetchContracts = async () => {
+  const fetchContractResources = async () => {
     try {
       setErrorMessage('')
-      const response = await fetch('/api/contracts')
-      const data = await response.json()
-      setContracts(data)
+      const [contractsResponse, clientsResponse, propertiesResponse] = await Promise.all([
+        fetch('/api/contracts'),
+        fetch('/api/clients'),
+        fetch('/api/properties')
+      ])
+
+      const [contractsData, clientsData, propertiesData] = await Promise.all([
+        contractsResponse.json(),
+        clientsResponse.json(),
+        propertiesResponse.json()
+      ])
+
+      setContracts(contractsData)
+      setClients(clientsData)
+      setProperties(propertiesData)
     } catch (error) {
       console.error('Erreur lors du chargement des contrats:', error)
       setErrorMessage('Impossible de charger les contrats')
@@ -54,7 +70,7 @@ const Contracts = () => {
 
       setShowForm(false)
       setFormData(initialFormData)
-      fetchContracts()
+      fetchContractResources()
     } catch (error) {
       console.error("Erreur lors de l'ajout du contrat:", error)
       setErrorMessage('Erreur lors de la communication avec le serveur')
@@ -76,11 +92,21 @@ const Contracts = () => {
         return
       }
 
-      fetchContracts()
+      fetchContractResources()
     } catch (error) {
       console.error('Erreur lors de la suppression:', error)
       setErrorMessage('Erreur lors de la communication avec le serveur')
     }
+  }
+
+  const getClientLabel = (clientId) => {
+    const client = clients.find((entry) => entry.id === toEntityId(clientId))
+    return client ? `${client.firstname} ${client.name}` : `Client #${clientId}`
+  }
+
+  const getPropertyLabel = (propertyId) => {
+    const property = properties.find((entry) => entry.id === toEntityId(propertyId))
+    return property ? property.address : `Bien #${propertyId}`
   }
 
   return (
@@ -102,7 +128,7 @@ const Contracts = () => {
         <div className="card">
           <h3>Ajouter un contrat</h3>
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
               <div className="form-group">
                 <label>ID Client</label>
                 <input
@@ -187,12 +213,41 @@ const Contracts = () => {
         <h3>Liste des Contrats</h3>
         {contracts.length === 0 ? (
           <p>Aucun contrat enregistre</p>
+        ) : isMobile ? (
+          <div className="mobile-record-list">
+            {contracts.map((contract) => (
+              <article key={contract.id} className="mobile-record-card">
+                <div className="mobile-record-head">
+                  <strong className="mobile-record-title">Contrat #{contract.id}</strong>
+                  <span className="mobile-record-meta">{contract.type}</span>
+                </div>
+                <button
+                  type="button"
+                  className="inline-link-btn"
+                  onClick={() => navigateTo?.('clients', { clientId: toEntityId(contract.client_id) })}
+                >
+                  {getClientLabel(contract.client_id)}
+                </button>
+                <button
+                  type="button"
+                  className="inline-link-btn"
+                  onClick={() => navigateTo?.('properties', { propertyId: toEntityId(contract.property_id) })}
+                >
+                  {getPropertyLabel(contract.property_id)}
+                </button>
+                <p>{contract.amount} EUR · {contract.status}</p>
+                <div className="mobile-record-actions">
+                  <button className="btn btn-danger" onClick={() => handleDelete(contract.id)}>Supprimer</button>
+                </div>
+              </article>
+            ))}
+          </div>
         ) : (
           <table className="table">
             <thead>
               <tr>
-                <th>ID Client</th>
-                <th>ID Bien</th>
+                <th>Client</th>
+                <th>Bien</th>
                 <th>Type</th>
                 <th>Date de debut</th>
                 <th>Date de fin</th>
@@ -204,8 +259,24 @@ const Contracts = () => {
             <tbody>
               {contracts.map((contract) => (
                 <tr key={contract.id}>
-                  <td>{contract.client_id}</td>
-                  <td>{contract.property_id}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="inline-link-btn"
+                      onClick={() => navigateTo?.('clients', { clientId: toEntityId(contract.client_id) })}
+                    >
+                      {getClientLabel(contract.client_id)}
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className="inline-link-btn"
+                      onClick={() => navigateTo?.('properties', { propertyId: toEntityId(contract.property_id) })}
+                    >
+                      {getPropertyLabel(contract.property_id)}
+                    </button>
+                  </td>
                   <td>{contract.type}</td>
                   <td>{contract.start_date}</td>
                   <td>{contract.end_date}</td>

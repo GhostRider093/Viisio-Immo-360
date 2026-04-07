@@ -10,7 +10,7 @@ const initialFormData = {
   photo_url: ''
 }
 
-function Properties({ focusPropertyId, onFocusHandled }) {
+function Properties({ focusPropertyId, onFocusHandled, isMobile = false }) {
   const [properties, setProperties] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -96,7 +96,7 @@ function Properties({ focusPropertyId, onFocusHandled }) {
         <div className="card">
           <h3>Ajouter un bien</h3>
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
               <div className="form-group">
                 <label>Adresse</label>
                 <input
@@ -188,6 +188,29 @@ function Properties({ focusPropertyId, onFocusHandled }) {
         <h3>Liste des Biens</h3>
         {properties.length === 0 ? (
           <p>Aucun bien enregistre</p>
+        ) : isMobile ? (
+          <div className="mobile-record-list">
+            {properties.map((property) => (
+              <article key={property.id} className="mobile-record-card">
+                {property.photo_url && (
+                  <img
+                    src={property.photo_url}
+                    alt={property.address}
+                    className="mobile-record-image"
+                    onError={(e) => { e.target.style.display = 'none' }}
+                  />
+                )}
+                <div className="mobile-record-head">
+                  <strong className="mobile-record-title">{property.address}</strong>
+                  <span className="mobile-record-meta">{property.type}</span>
+                </div>
+                <p>{Number(property.price).toLocaleString('fr-FR')} EUR · {property.area} m² · {property.rooms} pieces</p>
+                <div className="mobile-record-actions">
+                  <button className="btn btn-secondary" onClick={() => setSelectedProperty(property)}>Consulter</button>
+                </div>
+              </article>
+            ))}
+          </div>
         ) : (
           <table className="table">
             <thead>

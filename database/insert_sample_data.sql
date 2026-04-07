@@ -52,7 +52,8 @@ INSERT INTO clients (name, firstname, email, phone, address, city, postal_code, 
 ('Perez', 'Nadia', 'nadia.perez@example.com', '0645704321', '14 Rue de l''Église', 'Arles', '13200', 'France'),
 ('Dupré', 'Matthieu', 'matthieu.dupre@example.com', '0756815432', '25 Boulevard des Alpes', 'Chambéry', '73000', 'France'),
 ('Aubert', 'Caroline', 'caroline.aubert@example.com', '0667926543', '42 Rue de la Paix', 'Vannes', '56000', 'France'),
-('Schmitt', 'Denis', 'denis.schmitt@example.com', '0778937654', '8 Rue du Rhin', 'Colmar', '68000', 'France');
+('Schmitt', 'Denis', 'denis.schmitt@example.com', '0778937654', '8 Rue du Rhin', 'Colmar', '68000', 'France'),
+('Labonne', 'Arnaud', 'arnaud.labonne@gmail.com', '06 59 07 45 71', '34 Rue de la Croix Rousse', 'Poilhes', '34310', 'France');
 
 -- Biens immobiliers (20)
 INSERT INTO properties (address, type, price, area, rooms, description, photo_url) VALUES
@@ -75,7 +76,8 @@ INSERT INTO properties (address, type, price, area, rooms, description, photo_ur
 ('66 Boulevard de la Mer, Le Havre', 'appartement', 175000, 45, 2, 'Appartement face à la mer, parking inclus', 'https://picsum.photos/seed/appart-havre/800/600'),
 ('9 Rue des Acacias, Bordeaux', 'terrain', 160000, 400, 0, 'Terrain dans quartier résidentiel, proche commodités', 'https://picsum.photos/seed/terrain-bordeaux/800/600'),
 ('38 Avenue de Lyon, Tours', 'maison', 350000, 105, 4, 'Maison avec jardin arboré, quartier calme et verdoyant', 'https://picsum.photos/seed/maison-tours/800/600'),
-('21 Rue du Château, Annecy', 'appartement', 490000, 75, 3, 'Appartement de charme avec vue sur le lac d''Annecy', 'https://picsum.photos/seed/appart-annecy/800/600');
+('21 Rue du Château, Annecy', 'appartement', 490000, 75, 3, 'Appartement de charme avec vue sur le lac d''Annecy', 'https://picsum.photos/seed/appart-annecy/800/600'),
+('34 Rue de la Croix Rouge, Poilhes', 'maison', 400000, 138, 5, 'Maison familiale a vendre avec terrasse, jardin et potentiel de renovation legere.', 'https://picsum.photos/seed/maison-poilhes-labonne/800/600');
 
 -- Événements de l'agenda
 INSERT INTO events (title, start_date, end_date, description) VALUES
@@ -85,10 +87,16 @@ INSERT INTO events (title, start_date, end_date, description) VALUES
 ('Visite terrain Toulouse', '2023-10-18 11:00:00', '2023-10-18 12:00:00', 'Visite du terrain avec Thomas Leroy'),
 ('Rendez-vous client', '2023-10-19 15:00:00', '2023-10-19 16:00:00', 'Rendez-vous avec Sophie Durand pour discuter des options');
 
+INSERT INTO events (title, start_date, end_date, description, client_id, property_id) VALUES
+('Estimation maison Poilhes', '2026-04-08 10:30:00', '2026-04-08 11:30:00', 'Point de vente avec Arnaud Labonne pour la maison de la Croix Rouge.', 51, 21),
+('Visite maison Bordeaux', '2026-04-09 15:00:00', '2026-04-09 16:00:00', 'Visite avec Sophie Durand sur le bien de Bordeaux.', 4, 4),
+('Relance appartement Paris', '2026-04-10 09:00:00', '2026-04-10 09:30:00', 'Suivi commercial avec Jean Dupont pour confirmer son interet.', 1, 1);
+
 -- Contrats
 INSERT INTO contracts (client_id, property_id, type, start_date, end_date, amount, status) VALUES
 (1, 1, 'location', '2023-10-01', '2024-09-30', 1200, 'actif'),
 (2, 2, 'vente', '2023-10-16', '2023-10-16', 750000, 'actif'),
 (3, 3, 'location', '2023-11-01', '2024-10-31', 800, 'actif'),
 (4, 4, 'location', '2023-10-15', '2024-04-15', 1500, 'actif'),
-(5, 5, 'vente', '2023-10-18', '2023-10-18', 200000, 'actif');
+(5, 5, 'vente', '2023-10-18', '2023-10-18', 200000, 'actif'),
+(51, 21, 'vente', '2026-04-07', '2026-07-31', 400000, 'actif');

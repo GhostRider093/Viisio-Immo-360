@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Header = ({ currentPage, setCurrentPage }) => {
+const Header = ({ currentPage, setCurrentPage, isMobile }) => {
   const navItems = [
     { key: 'dashboard', label: 'Accueil' },
     { key: 'clients', label: 'Clients' },
@@ -9,14 +9,37 @@ const Header = ({ currentPage, setCurrentPage }) => {
     { key: 'contracts', label: 'Contrats' }
   ]
 
+  if (isMobile) {
+    return (
+      <>
+        <header className="header mobile-header">
+          <div className="container mobile-header-inner">
+            <span className="brand-badge brand-badge-wide mobile-brand-badge">Application Immobiliere</span>
+          </div>
+        </header>
+
+        <nav className="mobile-bottom-nav">
+          {navItems.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              className={`mobile-nav-link ${currentPage === item.key ? 'is-active' : ''}`}
+              onClick={() => setCurrentPage(item.key)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+      </>
+    )
+  }
+
   return (
     <header className="header">
       <div className="container header-inner">
         <div className="brand-block">
-          <span className="brand-kicker">Immo Signature</span>
           <div className="brand-title-wrap">
-            <h2 className="brand-title">Application Immobiliere</h2>
-            <span className="brand-badge">Administratif</span>
+            <span className="brand-badge brand-badge-wide">Application Immobiliere</span>
           </div>
         </div>
 
