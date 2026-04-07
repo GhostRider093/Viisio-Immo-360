@@ -1,0 +1,10 @@
+.git
+.gitignore
+node_modules
+npm-debug.log
+captures
+data
+database/real_estate.db
+README.md
+PLAN_CORRECTIONS.md
+start.bat

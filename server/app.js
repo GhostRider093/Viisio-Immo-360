@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import fs from 'fs';
 import path from 'path';
 import { config } from './config.js';
 import { database } from './utils/database.js';
@@ -89,6 +90,29 @@ const ensureEventLinksSchema = async () => {
   }
 };
 
+const ensureRuntimeDirectories = () => {
+  fs.mkdirSync(config.paths.dataDir, { recursive: true });
+  fs.mkdirSync(config.paths.databaseDir, { recursive: true });
+  fs.mkdirSync(config.paths.capturesDir, { recursive: true });
+};
+
+const ensureDatabaseSeeded = async (shouldSeed) => {
+  if (!shouldSeed) {
+    return;
+  }
+
+  const schemaPath = path.join(config.paths.rootDir, 'database', 'schema.sql');
+  const sampleDataPath = path.join(config.paths.rootDir, 'database', 'insert_sample_data.sql');
+
+  const schema = fs.readFileSync(schemaPath, 'utf8');
+  const sampleData = fs.readFileSync(sampleDataPath, 'utf8');
+
+  await database.exec(schema);
+  await database.exec(sampleData);
+
+  console.log(`Base SQLite initialisee automatiquement dans ${config.database.path}`);
+};
+
 app.use(cors(config.cors));
 app.use(express.json());
 app.use(express.static(config.paths.staticDir));
@@ -98,10 +122,20 @@ if (config.paths.staticSource !== 'dist') {
   console.warn('Aucun build React trouve, fallback temporaire sur le dossier public');
 }
 
-process.on('SIGINT', async () => {
+const shutdown = async () => {
   console.log('\nFermeture du serveur...');
   await database.close();
   process.exit(0);
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    staticSource: config.paths.staticSource
+  });
 });
 
 app.get('/api/clients', async (req, res) => {
@@ -378,7 +412,10 @@ app.use((error, req, res, next) => {
 
 const startServer = async () => {
   try {
+    ensureRuntimeDirectories();
+    const shouldSeedDatabase = !fs.existsSync(config.database.path);
     await database.connect();
+    await ensureDatabaseSeeded(shouldSeedDatabase);
     await ensureEventLinksSchema();
 
     const server = app.listen(config.port, () => {

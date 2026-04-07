@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: viisio-immo-360
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8013}:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      CORS_ORIGIN: "${CORS_ORIGIN:-http://localhost:3000}"
+      DATA_DIR: /app/data
+      DATABASE_DIR: /app/data/database
+      DATABASE_PATH: /app/data/database/real_estate.db
+      CAPTURES_DIR: /app/data/captures
+      LEBONCOIN_URL: "${LEBONCOIN_URL:-}"
+    volumes:
+      - app_data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  app_data:
