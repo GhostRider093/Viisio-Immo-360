@@ -22,6 +22,11 @@ const prospectDefaults = {
 
 const normalizePhoneHref = (value) => `tel:${value.replace(/[^+\d]/g, '')}`
 const normalizeEmail = (value) => value.trim()
+const sortClientsByLastname = (clientList) => [...clientList].sort((left, right) => {
+  const leftValue = `${left.name || ''} ${left.firstname || ''}`.trim()
+  const rightValue = `${right.name || ''} ${right.firstname || ''}`.trim()
+  return leftValue.localeCompare(rightValue, 'fr', { sensitivity: 'base' })
+})
 
 const formatDateTime = (value) => {
   if (!value) {
@@ -59,6 +64,7 @@ const Clients = ({ focusClientId, onFocusHandled, isMobile = false }) => {
   const [errorMessage, setErrorMessage] = useState('')
   const [feedbackMessage, setFeedbackMessage] = useState('')
   const [selectedClient, setSelectedClient] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const [formData, setFormData] = useState(initialFormData)
 
   useEffect(() => {
@@ -95,7 +101,7 @@ const Clients = ({ focusClientId, onFocusHandled, isMobile = false }) => {
         contractsResponse.json()
       ])
 
-      setClients(clientsData)
+      setClients(sortClientsByLastname(clientsData))
       setEvents(eventsData)
       setContracts(contractsData)
     } catch (error) {
@@ -181,6 +187,26 @@ const Clients = ({ focusClientId, onFocusHandled, isMobile = false }) => {
   const selectedClientContracts = selectedClient
     ? contracts.filter((contract) => Number(contract.client_id) === selectedClient.id)
     : []
+
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase()
+  const filteredClients = clients.filter((client) => {
+    if (!normalizedSearchQuery) {
+      return true
+    }
+
+    const searchableContent = [
+      client.firstname,
+      client.name,
+      client.email,
+      client.phone,
+      client.address,
+      client.city,
+      client.postal_code,
+      client.country
+    ].join(' ').toLowerCase()
+
+    return searchableContent.includes(normalizedSearchQuery)
+  })
 
   return (
     <div>
@@ -282,11 +308,20 @@ const Clients = ({ focusClientId, onFocusHandled, isMobile = false }) => {
 
       <div className="card">
         <h3>Liste des Clients</h3>
-        {clients.length === 0 ? (
+        <div className="search-toolbar">
+          <input
+            type="search"
+            className="search-input"
+            placeholder="Rechercher un client, un mail, une ville..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+        </div>
+        {filteredClients.length === 0 ? (
           <p>Aucun client enregistre</p>
         ) : isMobile ? (
           <div className="mobile-record-list">
-            {clients.map((client) => (
+            {filteredClients.map((client) => (
               <article key={client.id} className="mobile-record-card">
                 <div className="mobile-record-head">
                   <strong className="mobile-record-title">{client.firstname} {client.name}</strong>
@@ -314,7 +349,7 @@ const Clients = ({ focusClientId, onFocusHandled, isMobile = false }) => {
               </tr>
             </thead>
             <tbody>
-              {clients.map((client) => (
+              {filteredClients.map((client) => (
                 <tr key={client.id}>
                   <td>{client.name}</td>
                   <td>{client.firstname}</td>

@@ -40,6 +40,7 @@ function Agenda({ navigateTo, isMobile = false }) {
   const [properties, setProperties] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [formData, setFormData] = useState(initialFormData)
 
   useEffect(() => {
@@ -98,6 +99,25 @@ function Agenda({ navigateTo, isMobile = false }) {
       setErrorMessage('Erreur lors de la communication avec le serveur')
     }
   }
+
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase()
+  const filteredEvents = events.filter((event) => {
+    if (!normalizedSearchQuery) {
+      return true
+    }
+
+    const searchableContent = [
+      event.title,
+      event.description,
+      event.client_firstname,
+      event.client_name,
+      event.property_address,
+      event.start_date,
+      event.end_date
+    ].join(' ').toLowerCase()
+
+    return searchableContent.includes(normalizedSearchQuery)
+  })
 
   return (
     <div>
@@ -190,11 +210,20 @@ function Agenda({ navigateTo, isMobile = false }) {
 
       <div className="card">
         <h3>Liste des Evenements</h3>
-        {events.length === 0 ? (
+        <div className="search-toolbar">
+          <input
+            type="search"
+            className="search-input"
+            placeholder="Rechercher un evenement, un client, un bien..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+        </div>
+        {filteredEvents.length === 0 ? (
           <p>Aucun evenement enregistre</p>
         ) : isMobile ? (
           <div className="mobile-record-list">
-            {events.map((event) => (
+            {filteredEvents.map((event) => (
               <article key={event.id} className="mobile-record-card">
                 <div className="mobile-record-head">
                   <strong className="mobile-record-title">{event.title}</strong>
@@ -236,7 +265,7 @@ function Agenda({ navigateTo, isMobile = false }) {
               </tr>
             </thead>
             <tbody>
-              {events.map((event) => (
+              {filteredEvents.map((event) => (
                 <tr key={event.id} className={isTodayEvent(event.start_date) ? 'is-today-row' : ''}>
                   <td>{event.title}</td>
                   <td>{formatDateTime(event.start_date)}</td>

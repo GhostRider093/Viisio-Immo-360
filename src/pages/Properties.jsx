@@ -16,6 +16,7 @@ function Properties({ focusPropertyId, onFocusHandled, isMobile = false }) {
   const [errorMessage, setErrorMessage] = useState('')
   const [selectedProperty, setSelectedProperty] = useState(null)
   const [lightboxUrl, setLightboxUrl] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const [formData, setFormData] = useState(initialFormData)
 
   useEffect(() => {
@@ -76,6 +77,24 @@ function Properties({ focusPropertyId, onFocusHandled, isMobile = false }) {
       setErrorMessage('Erreur lors de la communication avec le serveur')
     }
   }
+
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase()
+  const filteredProperties = properties.filter((property) => {
+    if (!normalizedSearchQuery) {
+      return true
+    }
+
+    const searchableContent = [
+      property.address,
+      property.type,
+      property.description,
+      property.price,
+      property.area,
+      property.rooms
+    ].join(' ').toLowerCase()
+
+    return searchableContent.includes(normalizedSearchQuery)
+  })
 
   return (
     <div>
@@ -186,11 +205,20 @@ function Properties({ focusPropertyId, onFocusHandled, isMobile = false }) {
 
       <div className="card">
         <h3>Liste des Biens</h3>
-        {properties.length === 0 ? (
+        <div className="search-toolbar">
+          <input
+            type="search"
+            className="search-input"
+            placeholder="Rechercher un bien, une adresse, un type..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+        </div>
+        {filteredProperties.length === 0 ? (
           <p>Aucun bien enregistre</p>
         ) : isMobile ? (
           <div className="mobile-record-list">
-            {properties.map((property) => (
+            {filteredProperties.map((property) => (
               <article key={property.id} className="mobile-record-card">
                 {property.photo_url && (
                   <img
@@ -225,7 +253,7 @@ function Properties({ focusPropertyId, onFocusHandled, isMobile = false }) {
               </tr>
             </thead>
             <tbody>
-              {properties.map((property) => (
+              {filteredProperties.map((property) => (
                 <tr key={property.id}>
                   <td>
                     {property.photo_url ? (

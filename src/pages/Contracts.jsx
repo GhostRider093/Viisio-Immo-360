@@ -18,6 +18,7 @@ const Contracts = ({ navigateTo, isMobile = false }) => {
   const [properties, setProperties] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [formData, setFormData] = useState(initialFormData)
 
   useEffect(() => {
@@ -108,6 +109,26 @@ const Contracts = ({ navigateTo, isMobile = false }) => {
     const property = properties.find((entry) => entry.id === toEntityId(propertyId))
     return property ? property.address : `Bien #${propertyId}`
   }
+
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase()
+  const filteredContracts = contracts.filter((contract) => {
+    if (!normalizedSearchQuery) {
+      return true
+    }
+
+    const searchableContent = [
+      contract.id,
+      contract.type,
+      contract.status,
+      contract.amount,
+      contract.start_date,
+      contract.end_date,
+      getClientLabel(contract.client_id),
+      getPropertyLabel(contract.property_id)
+    ].join(' ').toLowerCase()
+
+    return searchableContent.includes(normalizedSearchQuery)
+  })
 
   return (
     <div>
@@ -211,11 +232,20 @@ const Contracts = ({ navigateTo, isMobile = false }) => {
 
       <div className="card">
         <h3>Liste des Contrats</h3>
-        {contracts.length === 0 ? (
+        <div className="search-toolbar">
+          <input
+            type="search"
+            className="search-input"
+            placeholder="Rechercher un contrat, un client, un bien..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+        </div>
+        {filteredContracts.length === 0 ? (
           <p>Aucun contrat enregistre</p>
         ) : isMobile ? (
           <div className="mobile-record-list">
-            {contracts.map((contract) => (
+            {filteredContracts.map((contract) => (
               <article key={contract.id} className="mobile-record-card">
                 <div className="mobile-record-head">
                   <strong className="mobile-record-title">Contrat #{contract.id}</strong>
@@ -257,7 +287,7 @@ const Contracts = ({ navigateTo, isMobile = false }) => {
               </tr>
             </thead>
             <tbody>
-              {contracts.map((contract) => (
+              {filteredContracts.map((contract) => (
                 <tr key={contract.id}>
                   <td>
                     <button
